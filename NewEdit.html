@@ -6,10 +6,9 @@
 
 </style>
 <title>Javascript Textarea HTML Editor</title>
-<!-- подключаем JavaScript-код, отвечающий за работу визуального HTML-редактора на веб-странице -->
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1251"/>
 <script type="text/javascript">
-//Определение необходимых переменных браузеров:
+//checked browsers versions - netscape old code:
 var IE_DET=IE_DET=window.navigator.userAgent.toLowerCase().indexOf('msie ') > -1 || window.navigator.userAgent.toLowerCase().indexOf('trident/') > -1;;
 var atg=window.navigator.userAgent.toLowerCase();
 var ie_magor=parseInt(window.navigator.appVersion,10);
@@ -46,7 +45,7 @@ if (isWebkit)
 	
 }
 var iHTML = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1252\"/></head><body contenteditable='true'>test</body></html>";
-//Цветовой массив:
+//Color array:
 TABLE_ARR=new Array(new Array("#FFFFFF", "#FFCCCC", "#FFCC99", "#FFFF99", "#FFFFCC", "#99FF99", "#99FFFF", "#CCFFFF", "#CCCCFF", "#FFCCFF"),
                     new Array("#CCCCCC", "#FF6666", "#FF9966", "#FFFF66", "#FFFF33", "#66FF99", "#33FFFF", "#66FFFF", "#9999FF", "#FF99FF"),
                     new Array("#C0C0C0", "#FF0000", "#FF9900", "#FFCC66", "#FFFF00", "#33FF33", "#66CCCC", "#33CCFF", "#6666CC", "#CC66CC"),
@@ -55,14 +54,14 @@ TABLE_ARR=new Array(new Array("#FFFFFF", "#FFCCCC", "#FFCC99", "#FFFF99", "#FFFF
                     new Array("#333333", "#660000", "#993300", "#996633", "#666600", "#006600", "#336666", "#000099", "#333399", "#663366"),
                     new Array("#000000", "#330000", "#663300", "#663333", "#333300", "#003300", "#003333", "#000066", "#330099", "#330033"));
 
-//Массив спецсимволов:
+//Specsymbol array:
 TABLE_SPEC_SIMBOL=new Array(new Array("&nbsp;",  "&ensp;",  "&emsp;",  "&hellip;",  "&#46;",  "&#44;",  "&#58;",  "&#59;",  "&#33;",  "&#63;",  "&iquest;",  "&#150;",  "&#8211;",  "&#8212;",  "&middot;"),
                             new Array("&quot;",  "&lsquo;",  "&rsquo;",  "&sbquo;",  "&ldquo;",  "&rdquo;",  "&bdquo;",  "&laquo;",  "&raquo;",  "&#40;",  "&#41;",  "&lang;",  "&rang;",  "&#lsaquo;"),
                             new Array("&#rsaquo;",  "&#91;",  "&#93;",  "&#10075;",  "&#10076;",  "&#10077;",  "&#10078;",  "&#8481;",  "&#8507;",  "&trade;",  "&reg;",  "&copy;",  "&#9842;"),
                             new Array("&#9851;",  "&#8984;",  "&cent;",   "&#36;",  "&euro;",  "&pound;",  "&#8355;",  "&#8381;",  "&#8372;",  "&#8376;",  "&#22291;",  "&#8377;",  "&yen;"),
                             new Array("&#3647;",  "&#8383;",  "&curren;"));
 
-//Математические символы:
+//Math symbol:
 TABLE_MATH_SYMBOL=new Array( new Array("&plusmn;",   "&frac14;",   "&frac12;",   "&frac34;",   "&times;",   "&divide;",   "&forall;",   "&part;",   "&exist;",   "&empty;",   "&nabla;"),  
  new Array("&isin;",   "&notin;",   "&ni;",   "&prod;",   "&sum;",   "&minus;",   "&lowast;",   "&radic;",   "&prop;",   "&infin;",   "&ang;",   "&and;",   "&or;"),  
  new Array("&cap;",   "&cup;",   "&int;",   "&there4;",   "&sim;",   "&cong;",   "&asymp;",   "&ne;",   "&equiv;",   "&le;",   "&ge;",   "&sub;",   "&sup;",   "&nsub;"),  
@@ -78,7 +77,7 @@ TABLE_Punct=new Array(new Array("&ndash;", "&mdash;", "&lsquo;", "&rsquo;", "&sb
   
 IE_DET=window.navigator.userAgent.toLowerCase().indexOf('msie ') > -1 || window.navigator.userAgent.toLowerCase().indexOf('trident/') > -1;
  
-//Документ для ввода таблицы - необходим для доработки программы:
+//Document create table:
 //
 SCRIPT_VAR='';
 SCRIPT_VAR=SCRIPT_VAR+'function AddTable() { alert(this.value);' ;
@@ -151,7 +150,7 @@ DOC_TABLE=DOC_TABLE+'</table></form>';
 function MakeEditor()
 {
 
-    // Вывод текстовых кнопок:
+    // Create text button:
     STR_VAR='';
     STR_VAR=STR_VAR+"<form method='POST' action='--WEBBOT-SELF--'>";
     STR_VAR=STR_VAR+"<input type='button' name='italic' value='Курсив' onclick='EDITOR(\"italic\",this)' />";
@@ -241,7 +240,7 @@ function MakeEditor()
 
     if (!document.designMode)
     {
-      
+        //Editor not support work no designMode:
         document.write(STR_VAR);
         document.write("</form>");
         document.write("<form>");
@@ -251,16 +250,17 @@ function MakeEditor()
     }
     else
     {
-        //Режим поддерживается, следовательно создаем frame:
+        //Editor support - create iframe element:
         if (IE_DET && IE_ONLOAD_NEW)
         {
-			//Так как у нас нормальный браузер - то следовательно переходим к нормальному режиму работы:
+			//IE new versions - IE 5.5 and more (and supported 1C Trident):
             STR_VAR=STR_VAR+"</form><form method='POST' action='--WEBBOT-SELF--'><iframe src='about:blank' width='100%' name='frameId' onload='LoadIframe(iHTML,\"frameId\",true);'></iframe></form>";
             document.body.innerHTML=STR_VAR;
         }
 
         else
         {
+			//IE old versions and another browsers (and supported 1C Webkit):
             STR_VAR=STR_VAR+"</form><form method='POST' action='--WEBBOT-SELF--'><iframe src='about:blank' width='100%' name='frameId'></iframe></form>";
             document.write(STR_VAR);
             LoadIframe(iHTML,"frameId",true);
@@ -272,35 +272,37 @@ function CreateWindowFrame(Command,thisarg)
 {
 
 
-
-    //Определяем метод запуска - окна или же встроенный фрейм (последний нужен исключительно для IE-11, Edge и 1С).
-	if ((IE_DET && isIE11)|| (webkit_1C==true)|| (webkit_edge==true) )
+    //Determinate method lunch - Window or iframe (iframe needed only old edge, IE-11, 1C Webkit).
+    if ((IE_DET && isIE11)|| (webkit_1C==true)|| (webkit_edge==true) )
     {
-        // создать iframe и добавить его после кнопки
+        // Vars to callback iframe:
         
         var PathOpen="parent";
         var TextClose='window.parent.IFrameClose(12)';
     }
     else
     {
-        //Для всех остальных режимов формируем окно в таком виде:
+        // Vars to callback window:
         
         var PathOpen="opener";
         var TextClose='window.close()';
 
     }
-    //Организуем функционал редактора:
+    //Create content child window:
     STR_CHILD_WINDOW='';
 
     if (Command=='CreateLink' || Command=='insertImage')
     {
        STR_CHILD_WINDOW=STR_CHILD_WINDOW+'<html><body>'+thisarg.value+'<br><form><input id="input_value" type="text"><input type="button" onclick="window.'+PathOpen+'.EDITOR('+"'"+Command+"'"+',document.forms[0].elements[0].value);'+TextClose+';"></form></body></html>';
     }
-    if(Command=='foreColor' || Command=='hiliteColor' || Command=='backcolor')
+   
+	//color panel:
+   if(Command=='foreColor' || Command=='hiliteColor' || Command=='backcolor')
     {
-        //Цветовая панель создание:
+        
 		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_ARR,PathOpen,TextClose,Command);
     }
+	//Table:
     if (Command=='table')
     {
 
@@ -310,34 +312,33 @@ function CreateWindowFrame(Command,thisarg)
     //SecSimbol command group:
     if(Command=='SpecSymbol')
     {
-        //Цветовая панель создание:
+        
 		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_SPEC_SIMBOL,PathOpen,TextClose);
 		
     }
-	//Панель вставки мат. символов:
+	//Math symbol:
 	 if(Command=='MathSymbol')
     {
-        //Цветовая панель создание:
+        
 		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_MATH_SYMBOL,PathOpen,TextClose);
     }
 	
-	//Панель вставки Strelok символов:
+	//Strelok symbol:
 	 if(Command=='Strelok')
     {
-        //Цветовая панель создание:
-		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_Strelok,PathOpen,TextClose);
+        STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_Strelok,PathOpen,TextClose);
     }
 	
-	//Панель вставки Punct символов:
+	//Punct symbol:
 	if(Command=='Punct')
     {
        
 		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_Punct,PathOpen,TextClose);
     }
-	//Инициализуем iframe или окно по необходимому условию:
+	//iframe or Window create:
 	if ((IE_DET && isIE11)|| (webkit_1C==true) || (webkit_edge==true))
     {
-        // создать iframe и добавить его после кнопки
+        // create iframe and append after button:
         FRAME_C=frames['IFRAME_PANEL'];
         if (FRAME_C)
         {
@@ -356,12 +357,13 @@ function CreateWindowFrame(Command,thisarg)
     }
     else
     {
-        //Для всех остальных режимов формируем окно в таком виде:
+        // create child window and append after button:
         var webkit = navigator.userAgent.toLowerCase().indexOf("webkit") != -1;
         var newWin = (webkit) ? window.open("", "", "width=400,height=300,resizable=true"): window.open("about:blank", "", "width=400,height=300,resizable=true");
 		
 		if (IE_DET) 
 		{ 
+			 //1C Trident append command and IE difference, another not be worked.
 		     if (!document.getElementsByTagName) 
 			 { 
 				newWin.document.write(STR_CHILD_WINDOW);
@@ -373,7 +375,6 @@ function CreateWindowFrame(Command,thisarg)
 				if (typeof HTML!='undefined')
 				{
 			    HTML.innerHTML=STR_CHILD_WINDOW;
-				//Дописываем принудительно js скрипты - 1С не помещает их должнмы образом:
 				if (Command=='table') 
 				{ 
 					var script2 = newWin.document.createElement('script');
@@ -399,7 +400,7 @@ function CreateWindowFrame(Command,thisarg)
 
 function IFrameClose(argument23)
 {
-    var raz = document.getElementById('IFRAME_PANEL'); // удалить созданный в родителе iframe
+    var raz = document.getElementById('IFRAME_PANEL'); // destroy iframe
     raz.parentNode.removeChild(raz);
 }
 
@@ -463,13 +464,14 @@ function EDITOR(command,thisarg)
     }
 }
 
-//Текстовый манипулятор по выделениям:
+//Test tags - used to special command:
 function TextTags(tag1,obj,STR_HTML)
 {
   
 	//Norm Editor:
     if (IE_DET && IE_ONLOAD_NEW)
 	{
+	    //1C bug patch:
 		var iframe=document.all["frameId"];
 		var iWin = (!iframe.contentWindow) ? iframe.Window : iframe.contentWindow;
 		var iDoc = (!iframe.contentDocument) ? iframe.document : iframe.contentDocument;
@@ -498,13 +500,11 @@ function TextTags(tag1,obj,STR_HTML)
         }
         if (IE_DET)
         {
-
+            //IE-11 fix:
             rang = sel.getRangeAt(0);
-            // temp становится родительским узлом выбранного контента, достигая эффекта полужирного
             var temp = iDoc.createElement('b');
             rang.surroundContents(temp);
-            // Сначала удаляем, а затем вставляем для достижения эффекта замены,
-            rang.deleteContents (); // удалить выбранный контент
+            rang.deleteContents (); 
             Elm=iDoc.createElement(tag1);
             Elm.innerHTML=STR;
             rang.insertNode (Elm);
@@ -512,7 +512,6 @@ function TextTags(tag1,obj,STR_HTML)
         }
         else
         {
-            //alert(STR);
             iWin.document.execCommand('insertHTML', '',"<"+tag1+">"+STR+""+'</'+tag1+'>');
         }
     }
@@ -530,7 +529,7 @@ function TextTags(tag1,obj,STR_HTML)
         {
             STR=STR_HTML;
         }
-       // alert(STR);
+      
         range.pasteHTML("<"+tag1+">"+STR+'</'+tag1+'>');
 
     }
@@ -599,11 +598,12 @@ function LoadIframe(iHTML2,id,disignmode)
 
     if (IE_DET && IE_ONLOAD_NEW)
     {
+	    //Fixed bug 1C:
         iframe2.document.write(iHTML2);
     }
     else
     {
-
+		//Work normal browsers:
         iframe2.document.open();
         iframe2.document.write(iHTML2);
         iframe2.document.close();
@@ -615,6 +615,7 @@ function LoadIframe(iHTML2,id,disignmode)
 	}
 }
 
+//Table button - used Child Windows Create:
 function CreateTableButtonDocument(title,TABLE_SPEC_SIMBOL1,PathOpen1,TextClose1,Command) 
 { 
 	STR_CHILD_WINDOW='';
