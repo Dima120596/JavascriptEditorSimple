@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+<style>
+
+</style>
+<title>Javascript Textarea HTML Editor</title>
+<!-- подключаем JavaScript-код, отвечающий за работу визуального HTML-редактора на веб-странице -->
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1251"/>
+<script type="text/javascript">
+//Определение необходимых переменных браузеров:
+var IE_DET=IE_DET=window.navigator.userAgent.toLowerCase().indexOf('msie ') > -1 || window.navigator.userAgent.toLowerCase().indexOf('trident/') > -1;;
+var atg=window.navigator.userAgent.toLowerCase();
+var ie_magor=parseInt(window.navigator.appVersion,10);
+var check_iE_5_5=IE_DET&&(ie_magor==4)&&(atg.indexOf('msie 5.5')!=-1);
+var check_iE_5_0=IE_DET&&(ie_magor==4)&&(atg.indexOf('msie 5.0')!=-1);
+var check_iE_4_0=IE_DET&&(ie_magor==4)&&(atg.indexOf('msie 5')==-1);
+var check_iE_3_0=IE_DET&&(ie_magor<4);
+var IE_ONLOAD_NEW=check_iE_5_5 || (!check_iE_5_5 && !check_iE_5_0 && !check_iE_4_0 && !check_iE_3_0) || document.compatMode;
+var isGecko = navigator.userAgent.toLowerCase().indexOf("gecko") != -1;
+var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+
+//cheked 1C Webkit or Normal Webkit: 
+var isWebkit=navigator.userAgent.toLowerCase().indexOf("webkit") != -1
+if (isWebkit) 
+{ 
+	var test1C=navigator.userAgent.toLowerCase();
+	test2=test1C.split("gecko)");
+	if(test2[1]=="" || test2[1].indexOf("v8webkit") != -1)
+	{
+		var webkit_1C=true;
+	} 
+	else 
+	{ 
+		var webkit_1C=false;
+	}
+	//Checked Old Edge:
+	if  (test2[1].indexOf("edge") != -1) { 
+	  var webkit_edge=true;
+	}
+	else 
+	{ 
+	  var webkit_edge=false;
+	}
+	
+}
+var iHTML = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1252\"/></head><body contenteditable='true'>test</body></html>";
+//Цветовой массив:
+TABLE_ARR=new Array(new Array("#FFFFFF", "#FFCCCC", "#FFCC99", "#FFFF99", "#FFFFCC", "#99FF99", "#99FFFF", "#CCFFFF", "#CCCCFF", "#FFCCFF"),
+                    new Array("#CCCCCC", "#FF6666", "#FF9966", "#FFFF66", "#FFFF33", "#66FF99", "#33FFFF", "#66FFFF", "#9999FF", "#FF99FF"),
+                    new Array("#C0C0C0", "#FF0000", "#FF9900", "#FFCC66", "#FFFF00", "#33FF33", "#66CCCC", "#33CCFF", "#6666CC", "#CC66CC"),
+                    new Array("#999999", "#CC0000", "#FF6600", "#FFCC33", "#FFCC00", "#33CC00", "#00CCCC", "#3366FF", "#6633FF", "#CC33CC"),
+                    new Array("#666666", "#990000", "#CC6600", "#CC9933", "#999900", "#009900", "#339999", "#3333FF", "#6600CC", "#993399"),
+                    new Array("#333333", "#660000", "#993300", "#996633", "#666600", "#006600", "#336666", "#000099", "#333399", "#663366"),
+                    new Array("#000000", "#330000", "#663300", "#663333", "#333300", "#003300", "#003333", "#000066", "#330099", "#330033"));
+
+//Массив спецсимволов:
+TABLE_SPEC_SIMBOL=new Array(new Array("&nbsp;",  "&ensp;",  "&emsp;",  "&hellip;",  "&#46;",  "&#44;",  "&#58;",  "&#59;",  "&#33;",  "&#63;",  "&iquest;",  "&#150;",  "&#8211;",  "&#8212;",  "&middot;"),
+                            new Array("&quot;",  "&lsquo;",  "&rsquo;",  "&sbquo;",  "&ldquo;",  "&rdquo;",  "&bdquo;",  "&laquo;",  "&raquo;",  "&#40;",  "&#41;",  "&lang;",  "&rang;",  "&#lsaquo;"),
+                            new Array("&#rsaquo;",  "&#91;",  "&#93;",  "&#10075;",  "&#10076;",  "&#10077;",  "&#10078;",  "&#8481;",  "&#8507;",  "&trade;",  "&reg;",  "&copy;",  "&#9842;"),
+                            new Array("&#9851;",  "&#8984;",  "&cent;",   "&#36;",  "&euro;",  "&pound;",  "&#8355;",  "&#8381;",  "&#8372;",  "&#8376;",  "&#22291;",  "&#8377;",  "&yen;"),
+                            new Array("&#3647;",  "&#8383;",  "&curren;"));
+
+//Математические символы:
+TABLE_MATH_SYMBOL=new Array( new Array("&plusmn;",   "&frac14;",   "&frac12;",   "&frac34;",   "&times;",   "&divide;",   "&forall;",   "&part;",   "&exist;",   "&empty;",   "&nabla;"),  
+ new Array("&isin;",   "&notin;",   "&ni;",   "&prod;",   "&sum;",   "&minus;",   "&lowast;",   "&radic;",   "&prop;",   "&infin;",   "&ang;",   "&and;",   "&or;"),  
+ new Array("&cap;",   "&cup;",   "&int;",   "&there4;",   "&sim;",   "&cong;",   "&asymp;",   "&ne;",   "&equiv;",   "&le;",   "&ge;",   "&sub;",   "&sup;",   "&nsub;"),  
+ new Array("&sube;",   "&supe;",   "&oplus;",   "&otimes;",   "&perp;",   "&sdot;"));
+
+//Table Strelok:
+TABLE_Strelok=new Array( new Array("&larr;",  "&uarr;",  "&rarr;",  "&darr;",  "&harr;",  "&lArr;",  "&uArr;",  "&rArr;",  "&dArr;",  "&hArr;"));
+
+//Table punct znak: 
+TABLE_Punct=new Array(new Array("&ndash;", "&mdash;", "&lsquo;", "&rsquo;", "&sbquo;", "&ldquo;", "&rdquo;", "&bdquo;", "&dagger;", "&Dagger;"),
+                            new Array("&bull;",  "&hellip;",  "&permil;",  "&prime;",  "&Prime;",  "&lsaquo;",  "&rsaquo;",  "&oline;",  "&frasl;"));
+  
+  
+IE_DET=window.navigator.userAgent.toLowerCase().indexOf('msie ') > -1 || window.navigator.userAgent.toLowerCase().indexOf('trident/') > -1;
+ 
+//Документ для ввода таблицы - необходим для доработки программы:
+//
+SCRIPT_VAR='';
+SCRIPT_VAR=SCRIPT_VAR+'function AddTable() { alert(this.value);' ;
+SCRIPT_VAR=SCRIPT_VAR+'var widthType = (document.tableForm.widthType.value == "pixels") ? "" : "%";';
+SCRIPT_VAR=SCRIPT_VAR+'var caption2 =  (document.tableForm.caption.value == "") ? "" : "<caption>"+document.tableForm.caption.value+"</caption>\\n";';
+SCRIPT_VAR=SCRIPT_VAR+'var tbody =  (document.tableForm.captioncalsinput.checked) ? "</tbody>" : "";';
+SCRIPT_VAR=SCRIPT_VAR+'var html2 = "<table border=\\"" + document.tableForm.border.value + "\\" cellpadding=\\"" + document.tableForm.padding.value + "\\" ";';
+SCRIPT_VAR=SCRIPT_VAR+'html2 += "cellspacing=\\"" + document.tableForm.spacing.value + "\\" width=\\"" + document.tableForm.width.value + widthType + "\\">\\n";';
+SCRIPT_VAR=SCRIPT_VAR+'html2 += ""+caption2;';
+SCRIPT_VAR=SCRIPT_VAR+'if (tbody!="") { html2 += "<thead>\\n";';
+SCRIPT_VAR=SCRIPT_VAR+'for (var rows = 0; rows < document.tableForm.captioncals.value; rows++) {';
+SCRIPT_VAR=SCRIPT_VAR+'html2 += "<tr>\\n";';
+SCRIPT_VAR=SCRIPT_VAR+'for (cols = 0; cols < document.tableForm.columns.value; cols++) {';
+SCRIPT_VAR=SCRIPT_VAR+'html2 += "<td><b>&nbsp;</b></td>\\n";}';
+SCRIPT_VAR=SCRIPT_VAR+'html2+= "</tr>\\n";}';
+SCRIPT_VAR=SCRIPT_VAR+'html2 += "</thead>\\n<tbody>\\n"; } ';
+SCRIPT_VAR=SCRIPT_VAR+'for (var rows = 0; rows < document.tableForm.rows.value; rows++) {';
+SCRIPT_VAR=SCRIPT_VAR+'html2 += "<tr>\\n";';
+SCRIPT_VAR=SCRIPT_VAR+'for (cols = 0; cols < document.tableForm.columns.value; cols++) {';
+SCRIPT_VAR=SCRIPT_VAR+'html2 += "<td>&nbsp;</td>\\n";}';
+SCRIPT_VAR=SCRIPT_VAR+'html2+= "</tr>\\n";}';
+SCRIPT_VAR=SCRIPT_VAR+'html2+= tbody;';
+SCRIPT_VAR=SCRIPT_VAR+'html2 += "</table>\\n"; alert(html2); callback(html2);} ';
+
+DOC_TABLE='';
+DOC_TABLE=DOC_TABLE+'<form name="tableForm">';
+DOC_TABLE=DOC_TABLE+'<table cellpadding="4" cellspacing="0" border="0">';
+DOC_TABLE=DOC_TABLE+'<tr>';
+DOC_TABLE=DOC_TABLE+'<td align="right">caption</td>';
+DOC_TABLE=DOC_TABLE+'<td colspan="3"><input name="caption" type="text" id="caption" value="test"></td>';
+DOC_TABLE=DOC_TABLE+'</tr>';
+DOC_TABLE=DOC_TABLE+'<td align="right">Input caption cals?</td>';
+DOC_TABLE=DOC_TABLE+'<td colspan="2"><input name="captioncals" type="text" id="captioncals" value="0"></td>';
+DOC_TABLE=DOC_TABLE+'<td><input name="captioncalsinput" type="checkbox" id="captioncalsinput" value="test" onclick="document.tableForm.captioncals.value=(this.checked)? 1:0;"></td>';
+DOC_TABLE=DOC_TABLE+'</tr>';
+DOC_TABLE=DOC_TABLE+'<tr>';
+DOC_TABLE=DOC_TABLE+'<td align="right">Rows</td>';
+DOC_TABLE=DOC_TABLE+'<td><input name="rows" type="text" id="rows" value="2" size="4"></td>';
+DOC_TABLE=DOC_TABLE+'<td align="left">Columns: <input name="columns" type="text" id="columns" value="2" size="4"</td>';
+DOC_TABLE=DOC_TABLE+'</tr>';
+DOC_TABLE=DOC_TABLE+'<tr>';
+DOC_TABLE=DOC_TABLE+'<td align="right">Table width</td>';
+DOC_TABLE=DOC_TABLE+'<td><input name="width" type="text" id="width" value="100" size="4"</td>';
+DOC_TABLE=DOC_TABLE+'<td align="left">';
+DOC_TABLE=DOC_TABLE+'<select name="widthType" id="widthType">';
+DOC_TABLE=DOC_TABLE+'<option value="pixels">pixels</option>';
+DOC_TABLE=DOC_TABLE+'<option value="percent" selected>percent</option>';
+DOC_TABLE=DOC_TABLE+'</select>';
+DOC_TABLE=DOC_TABLE+'</td>';
+DOC_TABLE=DOC_TABLE+'</tr>';
+DOC_TABLE=DOC_TABLE+'<tr>';
+DOC_TABLE=DOC_TABLE+'<td align="right">Border thickness</td>';
+DOC_TABLE=DOC_TABLE+'<td><input name="border" type="text" id="border" value="1" size="4"</td>';
+DOC_TABLE=DOC_TABLE+'<td align="left">pixels</td>';
+DOC_TABLE=DOC_TABLE+'</tr>';
+DOC_TABLE=DOC_TABLE+'<tr>';
+DOC_TABLE=DOC_TABLE+'<td align="right">Cell padding</td>';
+DOC_TABLE=DOC_TABLE+'<td><input name="padding" type="text" id="padding" value="4" size="4"</td>';
+DOC_TABLE=DOC_TABLE+'<td>Cell spacing: <input name="spacing" type="text" id="0" value="0" size="4"</td>';
+DOC_TABLE=DOC_TABLE+'</tr>';
+DOC_TABLE=DOC_TABLE+'<tr>';
+DOC_TABLE=DOC_TABLE+'<td colspan="3" align="center">';
+DOC_TABLE=DOC_TABLE+'<input type="button" value="Insert Table" onClick="AddTable();" />';
+DOC_TABLE=DOC_TABLE+'<input type="button" value="Cancel" onClick="window.close();" />';
+DOC_TABLE=DOC_TABLE+'</td>';
+DOC_TABLE=DOC_TABLE+'</tr>';
+DOC_TABLE=DOC_TABLE+'</table></form>';
+
+
+function MakeEditor()
+{
+
+    // Вывод текстовых кнопок:
+    STR_VAR='';
+    STR_VAR=STR_VAR+"<form method='POST' action='--WEBBOT-SELF--'>";
+    STR_VAR=STR_VAR+"<input type='button' name='italic' value='Курсив' onclick='EDITOR(\"italic\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='bold' value='Жирный' onclick='EDITOR(\"bold\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='justifyCenter' value='Центр' onclick='EDITOR(\"justifyCenter\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='justifyFull' value='По ширине' onclick='EDITOR(\"justifyFull\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='justifyLeft' value='Влево' onclick='EDITOR(\"justifyLeft\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='justifyRight' value='Вправо' onclick='EDITOR(\"justifyRight\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='insertUnorderedList' value='Маркированный список' onclick='EDITOR(\"insertUnorderedList\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='insertOrderedList' value='Нумерованный список' onclick='EDITOR(\"insertOrderedList\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='insertHorizontalRule' value='Горизонтальная линия' onclick='EDITOR(\"insertHorizontalRule\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='redo' value='Повторить' onclick='EDITOR(\"redo\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='undo' value='Отменить' onclick='EDITOR(\"undo\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='strikeThrough' value='Зачеркнуть' onclick='EDITOR(\"strikeThrough\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='underline' value='Подчеркнуть' onclick='EDITOR(\"underline\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='insertParagraph' value='Параграф' onclick='EDITOR(\"insertParagraph\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='Outdent' value='Outdent' onclick='EDITOR(\"outdent\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='indent' value='Indent' onclick='EDITOR(\"indent\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='removeformat' value='Remove Formatting' onclick='EDITOR(\"removeformat\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='unlink' value='Remove Hyperlink' onclick='EDITOR(\"unlink\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='selectAll' value='Select All' onclick='EDITOR(\"selectAll\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='delete' value='Удалить выделенное' onclick='EDITOR(\"delete\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='link' value='Ссылка' onclick='CreateWindowFrame(\"CreateLink\",this);' />";
+    STR_VAR=STR_VAR+"<input type='button' name='image' value='Картинка' onclick='CreateWindowFrame(\"insertImage\",this);' />";
+    STR_VAR=STR_VAR+"<input type='button' name='returnhtml' value='HTML код' onclick='EDITOR(\"returnhtml\",this)' />";
+    STR_VAR=STR_VAR+"<input type='button' name='Сode' value='Сode' onclick=\"TextTags('code',' + this + ')\" />";
+    STR_VAR=STR_VAR+"<input type='button' name='blockquote' value='blockquote' onclick=\"TextTags('blockquote',' + this + ')\" />";
+    // STR_VAR=STR_VAR+"<input type='button' value='legend' onclick=\"TextTags('legend',' + this + ')\" />";
+    STR_VAR=STR_VAR+"<input type='button' name='cite' value='cite' onclick=\"TextTags('cite',' + this + ')\" />";
+    STR_VAR=STR_VAR+"<input type='button' name='samp' value='samp' onclick=\"TextTags('samp',' + this + ')\" />";
+    STR_VAR=STR_VAR+"<input type='button' name='q' value='q' onclick=\"TextTags('q',' + this + ')\" />";
+    STR_VAR=STR_VAR+"<input type='button' name='del' value='del' onclick=\"TextTags('del',' + this + ')\" />";
+    STR_VAR=STR_VAR+"<input type='button' name='SMALL' value='SMALL' onclick=\"TextTags('SMALL',' + this + ')\" />";
+    STR_VAR=STR_VAR+"<input type='button' name='table' value='table' onclick='CreateWindowFrame(\"table\",this);' />";
+    STR_VAR=STR_VAR+"<input type='button' name='SpecSymbol' value='SpecSymbol' onclick='CreateWindowFrame(\"SpecSymbol\",this);' />";
+	STR_VAR=STR_VAR+"<input type='button' name='MathSymbol' value='MathSymbol' onclick='CreateWindowFrame(\"MathSymbol\",this);' />";
+	STR_VAR=STR_VAR+"<input type='button' name='Strelok' value='Strelok' onclick='CreateWindowFrame(\"Strelok\",this);' />";
+	STR_VAR=STR_VAR+"<input type='button' name='Punct' value='Punct' onclick='CreateWindowFrame(\"Punct\",this);' />";
+    //Write to Font-Size command:
+    STR_VAR=STR_VAR+"<input type='button' name='foreColor' value='Цвет текста' onclick='CreateWindowFrame(\"foreColor\",this)' />";
+    if (IE_DET)
+    {
+        hiliteColor="backcolor";
+    }
+    else
+    {
+        hiliteColor="hiliteColor";
+    }
+    STR_VAR=STR_VAR+"<input type='button' name='hiliteColor' value='Фон текста' onclick='CreateWindowFrame(\""+hiliteColor+"\",this)' />";
+
+    var LIST_FONT_SIZE= '<select name="shrift_size" id="shrift_size" size="1" onchange="EDITOR(\'fontSize\',this)"> \
+		<option value="Font-Size">Font-Size</option> \
+		<option value="1">1</option> \
+		<option value="2">2</option> \
+		<option value="3">3</option> \
+		<option value="4">4</option> \
+		<option value="5">5</option> \
+		<option value="6">6</option> \
+		<option value="7">7</option></select>';
+
+    STR_VAR=STR_VAR+LIST_FONT_SIZE;
+    //Write to FONT Type Command:
+    var LIST_FONT_TYPE= '<select name="shrift_name" id="shrift_name" size="1" onchange="EDITOR(\'fontName\',this)"> \
+		<option value="Font:">FONT:</option> \
+		<option value="Arial">Arial</option> \
+		<option value="Arial Black">Arial Black</option> \
+		<option value="Courier New, Courier">Courier New, Courier</option> \
+		<option value="sans-serif">sans-serif</option> \
+		<option value="Helvetica">Helvetica</option> \
+		</select>';
+    STR_VAR=STR_VAR+LIST_FONT_TYPE;
+
+    var LIST_PARAGRATH_TYPE= '<select name="PARAGRATH" id="PARAGRATH" size="1" onchange="EDITOR(\'formatBlock\',this)"> \
+		<option value="Paragrath">Paragrath</option> \
+		<option value="p">p</option> \
+		<option value="<h1>">h1</option> \
+		<option value="<h2>">h2</option> \
+		<option value="<h3>">h3</option> \
+		<option value="<h4>">h4</option> \
+		<option value="<h5>">h5</option> \
+		<option value="<h6>">h6</option> \
+		<option value="<address>">address</option> \
+		<option value="<pre>">pre</option> \
+		</select>';
+
+    STR_VAR=STR_VAR+LIST_PARAGRATH_TYPE;
+
+    if (!document.designMode)
+    {
+      
+        document.write(STR_VAR);
+        document.write("</form>");
+        document.write("<form>");
+        document.write("<textarea name='codetext' rows="+20+" cols="+(document.width-5)+" >text edition not designMode not support</textarea>");
+        document.write("</form>");
+
+    }
+    else
+    {
+        //Режим поддерживается, следовательно создаем frame:
+        if (IE_DET && IE_ONLOAD_NEW)
+        {
+			//Так как у нас нормальный браузер - то следовательно переходим к нормальному режиму работы:
+            STR_VAR=STR_VAR+"</form><form method='POST' action='--WEBBOT-SELF--'><iframe src='about:blank' width='100%' name='frameId' onload='LoadIframe(iHTML,\"frameId\",true);'></iframe></form>";
+            document.body.innerHTML=STR_VAR;
+        }
+
+        else
+        {
+            STR_VAR=STR_VAR+"</form><form method='POST' action='--WEBBOT-SELF--'><iframe src='about:blank' width='100%' name='frameId'></iframe></form>";
+            document.write(STR_VAR);
+            LoadIframe(iHTML,"frameId",true);
+        }
+    }
+};
+
+function CreateWindowFrame(Command,thisarg)
+{
+
+
+
+    //Определяем метод запуска - окна или же встроенный фрейм (последний нужен исключительно для IE-11, Edge и 1С).
+	if ((IE_DET && isIE11)|| (webkit_1C==true)|| (webkit_edge==true) )
+    {
+        // создать iframe и добавить его после кнопки
+        
+        var PathOpen="parent";
+        var TextClose='window.parent.IFrameClose(12)';
+    }
+    else
+    {
+        //Для всех остальных режимов формируем окно в таком виде:
+        
+        var PathOpen="opener";
+        var TextClose='window.close()';
+
+    }
+    //Организуем функционал редактора:
+    STR_CHILD_WINDOW='';
+
+    if (Command=='CreateLink' || Command=='insertImage')
+    {
+       STR_CHILD_WINDOW=STR_CHILD_WINDOW+'<html><body>'+thisarg.value+'<br><form><input id="input_value" type="text"><input type="button" onclick="window.'+PathOpen+'.EDITOR('+"'"+Command+"'"+',document.forms[0].elements[0].value);'+TextClose+';"></form></body></html>';
+    }
+    if(Command=='foreColor' || Command=='hiliteColor' || Command=='backcolor')
+    {
+        //Цветовая панель создание:
+		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_ARR,PathOpen,TextClose,Command);
+    }
+    if (Command=='table')
+    {
+
+        SCR_callback='function callback(HTML_RET) { alert(HTML_RET); window.'+PathOpen+'.TextTags("p",12,HTML_RET);'+TextClose+';}';
+        STR_CHILD_WINDOW=STR_CHILD_WINDOW+'<html><head><title>Insert table'+thisarg.value+'</title>'+'<script language="JavaScript" type="text/javascript">'+SCRIPT_VAR+'\n'+SCR_callback+"</"+"script>"+'</head><body>'+DOC_TABLE+'</body></html>';
+    }
+    //SecSimbol command group:
+    if(Command=='SpecSymbol')
+    {
+        //Цветовая панель создание:
+		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_SPEC_SIMBOL,PathOpen,TextClose);
+		
+    }
+	//Панель вставки мат. символов:
+	 if(Command=='MathSymbol')
+    {
+        //Цветовая панель создание:
+		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_MATH_SYMBOL,PathOpen,TextClose);
+    }
+	
+	//Панель вставки Strelok символов:
+	 if(Command=='Strelok')
+    {
+        //Цветовая панель создание:
+		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_Strelok,PathOpen,TextClose);
+    }
+	
+	//Панель вставки Punct символов:
+	if(Command=='Punct')
+    {
+       
+		STR_CHILD_WINDOW=CreateTableButtonDocument(thisarg.value,TABLE_Punct,PathOpen,TextClose);
+    }
+	//Инициализуем iframe или окно по необходимому условию:
+	if ((IE_DET && isIE11)|| (webkit_1C==true) || (webkit_edge==true))
+    {
+        // создать iframe и добавить его после кнопки
+        FRAME_C=frames['IFRAME_PANEL'];
+        if (FRAME_C)
+        {
+            IFrameClose();
+        }
+        var iframe = document.createElement('iframe');
+        iframe.src='about:blank'
+        iframe.setAttribute('src', 'about:blank');
+        iframe.setAttribute('id', 'IFRAME_PANEL');
+        iframe.setAttribute('name', 'IFRAME_PANEL');
+        iframe.setAttribute('height', '200');
+		iframe.setAttribute('onload',"LoadIframe(STR_CHILD_WINDOW,'IFRAME_PANEL',false)");
+        iframe.style="width: 100%;border: none; unselectable='on';z-index:1;pointer-events: auto";
+        thisarg.parentNode.insertBefore(iframe, thisarg.nextSibling);
+
+    }
+    else
+    {
+        //Для всех остальных режимов формируем окно в таком виде:
+        var webkit = navigator.userAgent.toLowerCase().indexOf("webkit") != -1;
+        var newWin = (webkit) ? window.open("", "", "width=400,height=300,resizable=true"): window.open("about:blank", "", "width=400,height=300,resizable=true");
+		
+		if (IE_DET) 
+		{ 
+		     if (!document.getElementsByTagName) 
+			 { 
+				newWin.document.write(STR_CHILD_WINDOW);
+			 } 
+			 else 
+			 { 
+			   
+			    HTML=newWin.document.getElementsByTagName("body")[0];
+				if (typeof HTML!='undefined')
+				{
+			    HTML.innerHTML=STR_CHILD_WINDOW;
+				//Дописываем принудительно js скрипты - 1С не помещает их должнмы образом:
+				if (Command=='table') 
+				{ 
+					var script2 = newWin.document.createElement('script');
+				 	newWin.document.body.appendChild(script2);
+					HTML=newWin.document.getElementsByTagName("script")[0];
+					HTML.text=SCRIPT_VAR;
+					var script2 = newWin.document.createElement('script');
+					newWin.document.body.appendChild(script2);
+                    HTML=newWin.document.getElementsByTagName("script")[1];
+					HTML.text=SCR_callback;
+				
+				}
+				}				
+			 }			 
+		}
+		else 
+		{ 
+		  newWin.document.write(STR_CHILD_WINDOW);
+		}
+		
+    }
+}
+
+function IFrameClose(argument23)
+{
+    var raz = document.getElementById('IFRAME_PANEL'); // удалить созданный в родителе iframe
+    raz.parentNode.removeChild(raz);
+}
+
+function EDITOR(command,thisarg)
+{
+
+    argument="";
+    if (command=='fontSize' || command=='fontName' || command=='formatBlock')
+    {
+
+        argument=thisarg.options[thisarg.selectedIndex].value;
+        thisarg.selectedIndex=0;
+
+    }
+
+    if (command=='CreateLink' || command=='insertImage' || command=='foreColor' || command=='hiliteColor' || command=='backcolor' || command=='insertHTML')
+    {
+
+        argument=thisarg;
+
+    }
+    
+    if (command=='returnhtml')
+    {
+        if (document.designMode)
+        {
+		alert(frames["frameId"].document.documentElement.outerHTML);
+           // alert(document.frameId.document.documentElement.outerHTML);
+        }
+        else
+        {
+            alert(document.forms[1].codetext.value);
+        }
+    }
+    else
+    {
+        if (document.designMode)
+        {
+            
+			if (IE_DET && IE_ONLOAD_NEW)
+			{
+				var iframe=document.all["frameId"];
+				var iWin = (!iframe.contentWindow) ? iframe.Window : iframe.contentWindow;
+				
+            }   
+			else 
+			{
+            //Execute editor command:
+            var iframe=frames["frameId"];
+            var iWin=iframe.window;
+            }
+            iWin.focus();
+            iWin.document.execCommand(command, '', argument);
+        }
+        else
+        {
+
+            document.execCommand(command, '', argument);
+
+        }
+    }
+}
+
+//Текстовый манипулятор по выделениям:
+function TextTags(tag1,obj,STR_HTML)
+{
+  
+	//Norm Editor:
+    if (IE_DET && IE_ONLOAD_NEW)
+	{
+		var iframe=document.all["frameId"];
+		var iWin = (!iframe.contentWindow) ? iframe.Window : iframe.contentWindow;
+		var iDoc = (!iframe.contentDocument) ? iframe.document : iframe.contentDocument;
+				
+    }   
+	else 
+	{
+        //Execute editor command:
+        var iframe=frames["frameId"];
+        var iWin=iframe.window;
+		var iDoc = iframe.document;
+    }
+	
+    if (iDoc.getSelection)
+    {
+        iWin.focus();
+        sel=iDoc.getSelection();
+
+        if (typeof STR_HTML=='undefined')
+        {
+            STR=String(sel);
+        }
+        else
+        {
+            STR=STR_HTML;
+        }
+        if (IE_DET)
+        {
+
+            rang = sel.getRangeAt(0);
+            // temp становится родительским узлом выбранного контента, достигая эффекта полужирного
+            var temp = iDoc.createElement('b');
+            rang.surroundContents(temp);
+            // Сначала удаляем, а затем вставляем для достижения эффекта замены,
+            rang.deleteContents (); // удалить выбранный контент
+            Elm=iDoc.createElement(tag1);
+            Elm.innerHTML=STR;
+            rang.insertNode (Elm);
+
+        }
+        else
+        {
+            //alert(STR);
+            iWin.document.execCommand('insertHTML', '',"<"+tag1+">"+STR+""+'</'+tag1+'>');
+        }
+    }
+    else if (iDoc.selection)
+    {
+        iWin.focus();
+
+        var range = iDoc.selection.createRange();
+        
+        if (typeof STR_HTML=='undefined')
+        {
+            STR=String(range.text);
+        }
+        else
+        {
+            STR=STR_HTML;
+        }
+       // alert(STR);
+        range.pasteHTML("<"+tag1+">"+STR+'</'+tag1+'>');
+
+    }
+    //Test doc - plained editor:
+    //iDoc.getSelection().anchorNode.parentNode.outerHTML
+    /*
+        if (iframe) {
+            if (iDoc.getSelection) {
+                // Most browsers
+    			alert(iDoc.getSelection());
+                return String(iDoc.getSelection());
+            }
+            else if (iDoc.selection) {
+                // Internet Explorer 8 and below
+    			alert(iDoc.selection.createRange().text);
+                return iDoc.selection.createRange().text;
+            }
+            else if (iDoc.getSelection) {
+                // Safari 3
+    			alert(iDoc.getSelection());
+                return String(iDoc.getSelection());
+            }
+        }
+
+        /* Fall-through. This could happen if this function is called
+           on a frame that doesn't exist or that isn't ready yet. */
+    //return '';
+
+//}
+
+    /*
+    //textarea = document.getElementById(obj);
+    	// Code for IE
+    		if (iDoc.selection)
+    			{
+    				//textarea.focus();
+    				var sel = iDoc.selection.createRange();
+    				//alert(sel.text);
+    				sel.text = tag1 + sel.text + tag2;
+    			}
+       else
+        {  // Code for Mozilla Firefox
+    		var len = iDoc.value.length;
+    	    var start = iDoc.selectionStart;
+    		var end = iDoc.selectionEnd;
+
+    		//var scrollTop = textarea.scrollTop;
+    		//var scrollLeft = textarea.scrollLeft;
+
+            var sel = iDoc.value.substring(start, end);
+    	    //alert(sel);
+    		var rep = tag1 + sel + tag2;
+            iDoc.value =  iDoc.value.substring(0,start) + rep + iDoc.value.substring(end,len);
+
+    		//textarea.scrollTop = scrollTop;
+    		//textarea.scrollLeft = scrollLeft;
+    	}
+    	*/
+}
+
+
+function LoadIframe(iHTML2,id,disignmode)
+{
+  
+    var iframe2 = frames[id];
+
+    if (IE_DET && IE_ONLOAD_NEW)
+    {
+        iframe2.document.write(iHTML2);
+    }
+    else
+    {
+
+        iframe2.document.open();
+        iframe2.document.write(iHTML2);
+        iframe2.document.close();
+
+    }
+    if (disignmode==true)
+	{
+		iframe2.document.designMode = (isGecko) ? "on" : "On";
+	}
+}
+
+function CreateTableButtonDocument(title,TABLE_SPEC_SIMBOL1,PathOpen1,TextClose1,Command) 
+{ 
+	STR_CHILD_WINDOW='';
+	STR_CHILD_WINDOW=STR_CHILD_WINDOW+'<html><body>'+title+'<br><form><table cellpadding="0" cellspacing="1" border="1" style="unselectable=\'on\';"><tbody>';
+    for (var j=0; j<TABLE_SPEC_SIMBOL1.length; j++)
+    {
+        STR_CHILD_WINDOW=STR_CHILD_WINDOW+'<tr>';
+
+        for (var i=0; i<TABLE_SPEC_SIMBOL1[j].length; i++)
+        {
+
+			if(Command=='foreColor' || Command=='hiliteColor' || Command=='backcolor')
+			{   
+
+				STR_CHILD_WINDOW=STR_CHILD_WINDOW+'<td bgcolor='+"'"+TABLE_SPEC_SIMBOL1[j][i]+"'"+'><a width="10" height="10" href="#" onclick="window.'+PathOpen1+'.EDITOR('+"'"+Command+"'"+','+"'"+TABLE_SPEC_SIMBOL1[j][i]+"'"+');'+TextClose1+';"><img width="10" height="10" border="0"><a></td>';
+			}
+			else
+			{
+			
+				STR_CHILD_WINDOW=STR_CHILD_WINDOW+'<td><input type="button" value='+"'"+TABLE_SPEC_SIMBOL1[j][i]+"'"+' onclick="alert(this.value);window.'+PathOpen1+'.TextTags(\'span\',12,this.value);'+TextClose1+';\" /></td>';
+			}
+		}
+        
+		STR_CHILD_WINDOW=STR_CHILD_WINDOW+'</tr>';
+     }
+        
+    STR_CHILD_WINDOW=STR_CHILD_WINDOW+'</tbody></table></form></body></html>';
+	return STR_CHILD_WINDOW;
+}
+
+if (IE_DET && IE_ONLOAD_NEW)
+{
+    window.onload=MakeEditor;
+
+}
+else
+{
+
+    MakeEditor();
+}
+</script>
+</head>
+
+<body>
+
+</body>
+</html>
