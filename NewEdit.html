@@ -598,16 +598,34 @@ function GetHTMLFromDocument()
 				iHTML3=frames["frameId"].document.documentElement.outerHTML;
 				ELM.setAttribute('contentEditable', 'true');
 				return iHTML3;
-				
 			}
 			else 
 			{
-				//return frames["frameId"].document.documentElement.outerHTML;
-				//return frames["frameId"].document.documentElement;
-				//return frames["frameId"].document.getElementsByTagName("html")[0].childNodes[0];
-				//return frames["frameId"].elements("html").value;
-				//return frames["frameId"].document.documentElement.innerHTML;
-				return outerHTML(frames["frameId"].document.getElementsByTagName("html")[0]);
+			    if (document.frameId.document.body.outerHTML) 
+				{ 
+				   if (frames["frameId"].document.documentElement) 
+				   {
+				      return frames["frameId"].document.documentElement.outerHTML;
+					  
+				   } 
+				   else
+				   { 
+				      return frames["frameId"].document.body.outerHTML;
+				   }
+				} 
+				else 
+				{
+					elm=frames["frameId"].document.documentElement;
+				    var ret = "<"+elm.tagName;
+					for(var i=0; i<elm.attributes.length; i++){
+					var attr = elm.attributes[i];
+					ret += " "+attr.name+"=\""+attr.nodeValue.replace(/"/, "\"")+"\"";
+					  }
+					  ret += ">";
+					ret += elm.innerHTML+"</"+elm.tagName+">";
+					return ret;
+					
+				}
 			}
 			
         }
@@ -683,24 +701,6 @@ function CreateTableButtonDocument(title,TABLE_SPEC_SIMBOL1,PathOpen1,TextClose1
 	return STR_CHILD_WINDOW;
 }
 
-function outerHTML(elm){
-
-if (elm.outerHTML) 
- { 
-  return elm.outerHTML;
- }
- else 
- {
-  var ret = "<"+elm.tagName;
-  for(var i=0; i<elm.attributes.length; i++){
-    var attr = elm.attributes[i];
-    ret += " "+attr.name+"=\""+attr.nodeValue.replace(/"/, "\"")+"\"";
-  }
-  ret += ">";
-  ret += elm.innerHTML+"</"+elm.tagName+">";
-  return ret;
-  }
-}
 
 
 if (IE_DET && IE_ONLOAD_NEW)
