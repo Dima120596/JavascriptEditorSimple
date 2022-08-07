@@ -44,7 +44,7 @@ if (isWebkit)
 	}
 	
 }
-var iHTML = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1252\"/></head><body contenteditable='true'>test</body></html>";
+var iHTML = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1252\"/></head><body>test</body></html>";
 //Color array:
 TABLE_ARR=new Array(new Array("#FFFFFF", "#FFCCCC", "#FFCC99", "#FFFF99", "#FFFFCC", "#99FF99", "#99FFFF", "#CCFFFF", "#CCCCFF", "#FFCCFF"),
                     new Array("#CCCCCC", "#FF6666", "#FF9966", "#FFFF66", "#FFFF33", "#66FF99", "#33FFFF", "#66FFFF", "#9999FF", "#FF99FF"),
@@ -425,15 +425,7 @@ function EDITOR(command,thisarg)
     
     if (command=='returnhtml')
     {
-        if (document.designMode)
-        {
-		alert(frames["frameId"].document.documentElement.outerHTML);
-           // alert(document.frameId.document.documentElement.outerHTML);
-        }
-        else
-        {
-            alert(document.forms[1].codetext.value);
-        }
+      alert(GetHTMLFromDocument());
     }
     else
     {
@@ -591,6 +583,41 @@ function TextTags(tag1,obj,STR_HTML)
 }
 
 
+function GetHTMLFromDocument()
+{ 
+
+  if (document.designMode)
+        {
+		
+		
+			if (IE_DET && IE_ONLOAD_NEW)
+			{
+				//Fixed bug 1C:
+				ELM=frames["frameId"].document.body;
+				ELM.removeAttribute("contentEditable");
+				iHTML3=frames["frameId"].document.documentElement.outerHTML;
+				ELM.setAttribute('contentEditable', 'true');
+				return iHTML3;
+				
+			}
+			else 
+			{
+				//return frames["frameId"].document.documentElement.outerHTML;
+				//return frames["frameId"].document.documentElement;
+				//return frames["frameId"].document.getElementsByTagName("html")[0].childNodes[0];
+				//return frames["frameId"].elements("html").value;
+				//return frames["frameId"].document.documentElement.innerHTML;
+				return outerHTML(frames["frameId"].document.getElementsByTagName("html")[0]);
+			}
+			
+        }
+        else
+        {
+            return document.forms[1].codetext.value;
+        }
+
+}
+
 function LoadIframe(iHTML2,id,disignmode)
 {
   
@@ -599,7 +626,17 @@ function LoadIframe(iHTML2,id,disignmode)
     if (IE_DET && IE_ONLOAD_NEW)
     {
 	    //Fixed bug 1C:
-        iframe2.document.write(iHTML2);
+		if (id=="frameId")
+		{
+			iHTML3=iHTML2.replace("body","body contenteditable=\'true\'","i");
+			iframe2.document.write(iHTML3);
+		} 
+		else 
+		{ 
+			iframe2.document.write(iHTML2);
+		}
+		
+		
     }
     else
     {
@@ -645,6 +682,26 @@ function CreateTableButtonDocument(title,TABLE_SPEC_SIMBOL1,PathOpen1,TextClose1
     STR_CHILD_WINDOW=STR_CHILD_WINDOW+'</tbody></table></form></body></html>';
 	return STR_CHILD_WINDOW;
 }
+
+function outerHTML(elm){
+
+if (elm.outerHTML) 
+ { 
+  return elm.outerHTML;
+ }
+ else 
+ {
+  var ret = "<"+elm.tagName;
+  for(var i=0; i<elm.attributes.length; i++){
+    var attr = elm.attributes[i];
+    ret += " "+attr.name+"=\""+attr.nodeValue.replace(/"/, "\"")+"\"";
+  }
+  ret += ">";
+  ret += elm.innerHTML+"</"+elm.tagName+">";
+  return ret;
+  }
+}
+
 
 if (IE_DET && IE_ONLOAD_NEW)
 {
