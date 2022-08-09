@@ -44,7 +44,8 @@ if (isWebkit)
 	}
 	
 }
-var iHTML = "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=windows-1252\"/></head><body>test</body></html>";
+
+var iHTML="<'html><'head><'meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/><'/head><'body> test456<'/body><'/html>";
 //Color array:
 TABLE_ARR=new Array(new Array("#FFFFFF", "#FFCCCC", "#FFCC99", "#FFFF99", "#FFFFCC", "#99FF99", "#99FFFF", "#CCFFFF", "#CCCCFF", "#FFCCFF"),
                     new Array("#CCCCCC", "#FF6666", "#FF9966", "#FFFF66", "#FFFF33", "#66FF99", "#33FFFF", "#66FFFF", "#9999FF", "#FF99FF"),
@@ -249,19 +250,26 @@ function MakeEditor()
 
     }
     else
-    {
+    {	
+		
+		iHTML=iHTML.replace(/<'/g,"<");
+		//alert(iHTML);
+		//iHTML=iHTML.replace(/"<'"/g,"<");
+		
+		//iHTML=iHTML2;
         //Editor support - create iframe element:
         if (IE_DET && IE_ONLOAD_NEW)
         {
+		    
 			//IE new versions - IE 5.5 and more (and supported 1C Trident):
-            STR_VAR=STR_VAR+"</form><form method='POST' action='--WEBBOT-SELF--'><iframe src='about:blank' width='100%' name='frameId' onload='LoadIframe(iHTML,\"frameId\",true);'></iframe></form>";
+            STR_VAR=STR_VAR+"</form><form method='POST' action='--WEBBOT-SELF--'><iframe src='about:blank' width='100%' name='frameId' onload='LoadIframe(iHTML,\"frameId\",true);'></iframe></form><form name='HTML_CODE' method='POST' action='--WEBBOT-SELF--' style='display:none;'><textarea name='codetext1'></textarea></form>";
             document.body.innerHTML=STR_VAR;
         }
 
         else
         {
 			//IE old versions and another browsers (and supported 1C Webkit):
-            STR_VAR=STR_VAR+"</form><form method='POST' action='--WEBBOT-SELF--'><iframe src='about:blank' width='100%' name='frameId'></iframe></form>";
+            STR_VAR=STR_VAR+"</form><form method='POST' action='--WEBBOT-SELF--'><iframe src='about:blank' width='100%' name='frameId'></iframe></form><form method='POST' action='--WEBBOT-SELF--' name='HTML_CODE' style='display:none;'><textarea name='codetext1' ></textarea></form>";
             document.write(STR_VAR);
             LoadIframe(iHTML,"frameId",true);
         }
@@ -425,7 +433,7 @@ function EDITOR(command,thisarg)
     
     if (command=='returnhtml')
     {
-      alert(GetHTMLFromDocument());
+      VisibleHTML();
     }
     else
     {
@@ -583,57 +591,23 @@ function TextTags(tag1,obj,STR_HTML)
 }
 
 
-function GetHTMLFromDocument()
-{ 
+function outerHTML(elm){
 
-  if (document.designMode)
-        {
-		
-		
-			if (IE_DET && IE_ONLOAD_NEW)
-			{
-				//Fixed bug 1C:
-				ELM=frames["frameId"].document.body;
-				ELM.removeAttribute("contentEditable");
-				iHTML3=frames["frameId"].document.documentElement.outerHTML;
-				ELM.setAttribute('contentEditable', 'true');
-				return iHTML3;
-			}
-			else 
-			{
-			    if (document.frameId.document.body.outerHTML) 
-				{ 
-				   if (frames["frameId"].document.documentElement) 
-				   {
-				      return frames["frameId"].document.documentElement.outerHTML;
-					  
-				   } 
-				   else
-				   { 
-				      return frames["frameId"].document.body.outerHTML;
-				   }
-				} 
-				else 
-				{
-					elm=frames["frameId"].document.documentElement;
-				    var ret = "<"+elm.tagName;
-					for(var i=0; i<elm.attributes.length; i++){
-					var attr = elm.attributes[i];
-					ret += " "+attr.name+"=\""+attr.nodeValue.replace(/"/, "\"")+"\"";
-					  }
-					  ret += ">";
-					ret += elm.innerHTML+"</"+elm.tagName+">";
-					return ret;
-					
-				}
-			}
-			
-        }
-        else
-        {
-            return document.forms[1].codetext.value;
-        }
-
+if (elm.outerHTML) 
+ { 
+  return elm.outerHTML;
+ }
+ else 
+ {
+  var ret = "<"+elm.tagName;
+  for(var i=0; i<elm.attributes.length; i++){
+    var attr = elm.attributes[i];
+    ret += " "+attr.name+"=\""+attr.nodeValue.replace(/"/, "\"")+"\"";
+  }
+  ret += ">";
+  ret += elm.innerHTML+"</"+elm.tagName+">";
+  return ret;
+  }
 }
 
 function LoadIframe(iHTML2,id,disignmode)
@@ -646,8 +620,8 @@ function LoadIframe(iHTML2,id,disignmode)
 	    //Fixed bug 1C:
 		if (id=="frameId")
 		{
-			iHTML3=iHTML2.replace("body","body contenteditable=\'true\'","i");
-			iframe2.document.write(iHTML3);
+			iframe2.document.write(iHTML2);
+			iframe2.document.body.setAttribute('contentEditable', 'true');
 		} 
 		else 
 		{ 
@@ -701,7 +675,73 @@ function CreateTableButtonDocument(title,TABLE_SPEC_SIMBOL1,PathOpen1,TextClose1
 	return STR_CHILD_WINDOW;
 }
 
+function InsertHTML(StrWrite)
+{ 
+//iHTML=StrWrite.replace('"','//"');
+//iHTML=iHTML.replace("'","//'");
+    LoadIframe(StrWrite,"frameId",true);
 
+}
+
+function GetHTMLFromDocument()
+{ 
+
+  if (document.designMode)
+        {
+		
+		
+			if (IE_DET && IE_ONLOAD_NEW)
+			{
+				//Fixed bug 1C:
+				ELM=frames["frameId"].document.body;
+				ELM.removeAttribute("contentEditable");
+				iHTML3=frames["frameId"].document.documentElement.outerHTML;
+				ELM.setAttribute('contentEditable', 'true');
+				return iHTML3;
+				
+			}
+			else 
+			{
+			    if (!frames["frameId"].document.documentElement.outerHTML) 
+				{ 
+				   return outerHTML(frames["frameId"].document.documentElement); 
+				} 
+				else 
+				{
+					return frames["frameId"].document.documentElement.outerHTML;
+				}
+			}
+			
+        }
+        else
+        {
+            return document.forms[1].codetext.value;
+        }
+
+}
+//Used needed to simplify 1C return value:
+function VisibleHTML()
+{ 
+
+	if (!document.forms[2]) 
+	{ 
+
+		alert(GetHTMLFromDocument());
+	}
+	else 
+	{
+	if(document.forms[2].style.display != "none") 
+	{
+		document.forms[2].style.display="none";
+	}
+	else 
+	{ 
+		document.forms[2].codetext1.value=GetHTMLFromDocument();
+		document.forms[2].style.display="";
+	}
+
+}
+}
 
 if (IE_DET && IE_ONLOAD_NEW)
 {
